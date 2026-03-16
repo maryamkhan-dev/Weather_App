@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5-Day Weather Forecast</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+
+
+    /* Styles specific to this weather-data page */
+    #weather-data-container {
+      max-width: 1250px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+   
+    
+/* Styling the Filter Dropdown */
+#filter-dropdown-container {
+  display: flex;
+  justify-content: center;
+}
+
+#filter-dropdown {
+  width: 200px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+#filter-dropdown-container {
+  margin-bottom: 20px;
+}
+
+    /* Add border around forecast container */
+    .forecast-container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr); /* Create 5 equal columns */
+      gap: 10px;
+      padding: 20px;
+      border: none; /* Border to distinguish the forecast area */
+      border-radius: 10px;
+      
+    }
+    
+
+    .forecast-card {
+  background-color: rgb(22, 23, 26, 0.8); /* Optional: slight background for contrast */
+  border-radius: 10px;
+  padding: 15px;
+  width: 200px;
+  text-align: center;
+  box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers the content horizontally */
+  justify-content: space-around;
+  color: #fff; /* Make text white for visibility */
+}
+
+.forecast-card img {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background-color: none; /* Add background color */
+  border: none; /* Add border */
+  border-radius: 50%; /* Optional: make it circular */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.6);
+
+}
+
+.weather-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%; /* Optional: make it circular */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.6); /* Add a shadow to the icon */
+  margin-bottom: 95px; /* Add 20px margin between the icon and the temperature */
+}
+
+.temperature {
+  font-size: 2em;
+  font-weight: bold;
+  margin-top: 0; /* Remove top margin if not needed */
+}
+
+
+
+.forecast-card h3 {
+            font-size: 0.8rem; /* Smaller size for date */
+            margin: 0;
+        }
+
+        .forecast-card p {
+            margin: 5px 0; /* Margin adjustments */
+        }
+
+
+        #forecast-heading {
+            text-align: center; /* Center the heading */
+            font-size: 24px;
+            margin-top: 50px;
+            margin-bottom: 10px;
+            color: white; /* Make the heading color white */
+        }
+    .pagination {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      margin-left: 1000px; /* Align pagination with the forecast container */
+      
+    }
+
+    .pagination button {
+  width: 100px;
+  height: 30px;
+  margin: 0 7px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background-color: #2c3e50; /* Color del tema oscuro */
+   color: white;
+  cursor: pointer;
+  display: flex; /* Flexbox para centrar el texto */
+  align-items: center; /* Alinea el texto verticalmente */
+  justify-content: center; /* Alinea el texto horizontalmente */
+}
+
+
+
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+
+
+.flex-container {
+  margin-top: 10px; /* Reduced from 20px */
+  margin-bottom: 70px;
+  background-color: rgba(14, 14, 16, 0.7); /* Dark blue with transparency */
+  border-radius: 10px;
+  
+}
+
+
+
+.card-date {
+  font-size: 0.8em;
+  color: #ddd;
+  margin-bottom: 10px;
+}
+
+.card-main-info {
+  margin-bottom: 15px;
+}
+
+
+.temperature {
+  font-size: 2em;
+  font-weight: bold;
+  margin-top: 60px;
+}
+
+.description {
+  font-size: 1em;
+  color: #eee;
+  margin-bottom: 10px;
+}
+
+.card-details {
+  font-size: 0.9em;
+  color: #ddd;
+}
+
+.card-details p {
+  margin: 5px 0;
+}
+
+.chat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: white; /* Bright background for contrast */
+  color: #2c3e50; /* Darker text color */
+  font-size: 28px;
+  text-align: center;
+  line-height: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Darker shadow to make it stand out */
+  transition: transform 0.3s ease;
+}
+
+.chat-icon:hover {
+  transform: scale(1.1); /* Efecto hover para agrandar un poco */
+}
+
+ /* Chatbox container styling */
+#chatbox-container {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 300px;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  background-color: rgba(14, 14, 16, 0.9); /* Dark blue with transparency */
+  transform: translateY(100%); /* Initially hidden below the screen */
+  opacity: 0;
+  transition: transform 0.4s ease-in-out, opacity 0.4s;
+  display: none;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7); /* Adds a soft shadow */
+}
+
+#chatbox-header {
+  border-radius: 4px 4px 0 0;
+  box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between; /* Space between title and close button */
+  align-items: center; /* Center text vertically */
+  background-color: #2c3e50; /* Header background color */
+}
+
+
+#chatbox-header .close-chatbox {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  margin-right: 10px; /* Move close button to the right */
+}
+
+#chatbox-messages {
+  padding: 10px;
+  height: 200px;
+  overflow-y: auto;
+  border-bottom: 1px solid #ccc;
+  background-color: white;
+  color: #2c3e50; /* Chat message text color */
+  font-family: Arial, sans-serif;
+}
+
+#chatbox-messages div {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  background-color: #f4f4f4;
+  position: relative;
+  animation: slide-in 0.3s ease-out; /* Animation for new messages */
+}
+
+#chatbox-messages .bot-message {
+  background-color: #2c3e50; /* Bot message background */
+  color: white;
+}
+
+#chatbox-messages .user-message {
+  background-color: #d4edda; /* User message background */
+  color: #155724;
+  align-self: flex-end; /* Align user messages to the right */
+}
+
+#chatbox-input {
+  padding: 10px;
+  width: calc(100% - 22px);
+  margin-bottom: 10px;
+  background-color: #f4f4f4;
+  color: #2c3e50;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+#send-message-btn {
+  color: white;
+  padding: 10px 20px;
+  background-color: #2c3e50;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+#send-message-btn:hover {
+  background-color: #3b526a; /* Darken on hover */
+}
+
+/* Divider between messages */
+.chat-divider {
+  width: 100%;
+  height: 0px;
+  background-color: #ddd;
+  margin: 5px 0;
+}
+
+/* Message animation */
+@keyframes slide-in {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+/* Close button styling */
+.close-chatbox {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.close-chatbox:hover {
+  color: #ff6961;
+}
+
+
+#forecast-heading {
+  text-align: left;
+  font-size: 24px;
+  margin-top: 50px;
+  margin-bottom: 10px;
+
+  color: #ffffff; /* Match the uniform color theme */
+}
+
+   /* Overlay to cover the entire screen */
+   .overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Grey transparent overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999; /* Ensure it appears above other content */
+}
+
+/* Center the spinner and text */
+#loading-spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+/* Spinner styling */
+.spinner {
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-top: 5px solid #007bff;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+#toggle-container {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 20px; /* Adjust space from the right */
+  padding-top: 10px; /* Adjust space from the top */
+}
+
+/* Responsive Styles for devices with max-width of 768px (tablets and smaller devices) */
+@media (max-width: 768px) {
+
+/* Sidebar and profile section are identical to the dashboard */
+
+/* Adjusting the main container for smaller screens */
+#weather-data-container {
+  width: 90%; /* Full width for smaller screens */
+  margin: 0 auto; /* Center it */
+  padding: 10px; /* Add some padding for better appearance */
+}
+
+/* Flex-container adjustments */
+.flex-container {
+  flex-direction: column;
+  align-items: center;
+  padding: 15px; /* Add padding to make the content fit better on smaller screens */
+  width: 100%; /* Full width */
+  gap: 20px; /* Add space between sections */
+  margin-bottom: 30px;
+}
+
+/* Forecast container adjustments for smaller screens */
+ /* Adjust forecast container for smaller screens */
+ .forecast-container {
+    grid-template-columns: repeat(2, 1fr); /* Two columns instead of five */
+    gap: 20px; /* Increase gap between the weather cards */
+    width: 100%; /* Full width */
+    padding: 3px;
+  }
+
+  /* Adjust forecast cards to fit inside the container */
+  .forecast-card {
+    width: 90%; /* Slightly smaller width for each card to fit properly */
+    padding: 10px;
+    margin: 0 auto; /* Center the card horizontally */
+  }
+
+/* Weather icon size adjustment for forecast cards */
+.weather-icon {
+  width: 50px;
+  height: 50px;
+}
+
+/* Adjust temperature font size for smaller screens */
+.temperature {
+  font-size: 1.5em; /* Slightly reduce the font size */
+}
+
+/* Adjust forecast heading */
+#forecast-heading {
+  font-size: 1.5rem; /* Smaller font size for mobile */
+  text-align: center; /* Center the heading on smaller screens */
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* Pagination container */
+.pagination {
+  margin: 20px 0; /* Add space around pagination */
+  justify-content: center; /* Center the pagination on mobile */
+  margin-left: 0; /* Remove the specific margin */
+}
+
+/* Chatbox container adjustments for smaller screens */
+#chatbox-container {
+  width: 90%; /* Adjust chatbox to fit smaller screens */
+  bottom: 20px; /* Place it slightly higher on smaller screens */
+  right: 20px;
+  padding: 15px; /* Adjust padding */
+}
+
+#chatbox {
+  width: 100%; /* Full width on smaller screens */
+  padding: 10px;
+}
+
+/* Adjust the chatbox messages area */
+#chatbox-messages {
+  height: 150px; /* Reduce height for smaller screens */
+}
+
+/* Adjust chat icon */
+.chat-icon {
+  width: 40px;
+  height: 40px;
+  font-size: 24px; /* Reduce size for smaller screens */
+}
+
+/* Sidebar adjustments for mobile view */
+.hamburger-menu {
+  font-size: 1.5rem; /* Ensure the hamburger menu icon is visible */
+}
+
+/* Hide sidebar by default */
+.sidebar {
+  left: -250px; /* Hide sidebar offscreen */
+  transition: left 0.5s ease;
+}
+
+/* Sidebar when open */
+.sidebar.open {
+  left: 0;
+}
+
+/* User profile adjustments */
+#user-profile-container {
+  padding: 10px; /* Reduce padding for smaller screens */
+  position: static; /* Remove fixed positioning */
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-image {
+  width: 50px; /* Adjust profile image size */
+  height: 50px;
+}
+#search-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%; /* Reduce width of the search container */
+    margin: 0 auto; /* Center the container */
+    margin-top: 20px; /* Adjust top margin */
+  }
+  #city-input {
+    width: 90%; /* Reduce width of the search bar */
+    padding: 8px; /* Adjust padding */
+    font-size: 1rem; /* Adjust font size */
+  }
+
+ 
+}
+
+  </style>
+</head>
+<body>
+  <div id="background-blur"></div>
+
+  <div class="hamburger-menu" id="hamburger-menu">☰</div>
+  <div class="sidebar" id="sidebar">
+    <div class="logo-container">
+      <img src="Logo.jpg" alt="Weather App Logo" class="logo">
+      <h1>Weather App</h1>
+    </div>
+    <div id="button-container">
+      <button id="dashboard-btn" onclick="window.location.href='index.html'">
+        <i class="fas fa-chart-pie"></i> Dashboard
+      </button>
+      <button id="tables-btn" onclick="window.location.href='table.html'">
+        <i class="fas fa-table"></i> Tables
+      </button>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <header>
+      <div id="user-profile-container">
+        <div id="user-profile">
+          <img src="Profile.jpg" alt="Maryam Khan" class="profile-image">
+          <p><strong>Maryam Khan</strong></p>
+        </div>
+      </div>
+    </header>
+
+    <div id="search-container">
+      <input type="text" id="city-input" placeholder="Enter city name">
+      <button id="get-weather-btn">Get Weather</button>
+    </div>
+
+    <div id="weather-data-container">
+      <!-- Filter Dropdown -->
+      <div id="filter-dropdown-container">
+        <select id="filter-dropdown">
+          <option value="">-- Select Filter --</option>
+          <option value="ascending">Show temperatures in ascending order</option>
+          <option value="rain">Filter out days with rain</option>
+          <option value="withoutrain">Filter out days without rain</option>
+          <option value="highest">Show the day with the highest temperature</option>
+          <option value="descending">Show temperatures in descending order</option>
+        </select>
+      </div>
+
+      <h2 id="forecast-heading"></h2>
+
+      <!-- Pagination placed directly above the forecast container -->
+      <div class="pagination" id="pagination-container">
+        <button id="prev-page" disabled>Previous</button>
+        <span id="current-page">1</span>
+        <button id="next-page">Next</button>
+      </div>
+
+      <div id="loading-overlay" class="overlay" style="display: none;">
+        <div id="loading-spinner-container">
+          <div class="spinner"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+      
+      <div class="flex-container">
+        <div id="toggle-container">
+          <button id="unit-toggle" style="padding: 10px 20px; font-size: 16px;">Switch to °F</button>
+        </div>
+        
+        <!-- Weather cards container with border -->
+        <div id="forecast-container" class="forecast-container">
+          
+          <!-- Weather cards will be rendered here -->
+        </div>
+      </div>
+    </div>
+
+   <!-- Chatbox container (hidden initially) -->
+    <div id="chatbox-container"> 
+      <div id="chatbox">
+        <div id="chatbox-header">
+          Chat with Us!
+          <button class="close-chatbox">&times;</button> <!-- Close button -->
+        </div>
+        <div id="chatbox-messages"></div>
+        <input type="text" id="chatbox-input" placeholder="Type your message here...">
+        <button id="send-message-btn">Send</button>
+      </div>
+    </div>
+
+ <!-- Footer with Chat Icon -->
+ <footer style="position: fixed; bottom: 20px; right: 20px;">
+  <div class="chat-icon" id="chat-icon">💬</div>
+</footer>
+
+
+
+    
+  <script src="table.js"></script>
+</body>
+</html>

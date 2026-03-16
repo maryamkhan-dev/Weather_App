@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Dashboard</title>
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
+
+  <style>
+    /* Flexbox container for weather widget and charts */
+    
+    /* Blurry Background for Webpage */
+
+    #main-container {
+  display: flex;
+  flex-direction: row;
+  margin-top: 30px;
+  margin-left: 170px;
+  margin-right: 90px;
+  margin-bottom: 30px;
+  gap: 30px;
+  background-color: rgba(14, 14, 16, 0.7); /* Dark blue with transparency */
+  border-radius: 20px;
+  height: 100vh;
+  position: relative;
+  z-index: 0; /* Set to be in the background */
+}
+
+/* Weather Widget Styling */
+#weather-widget {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1; /* Higher z-index so it's above the main container */
+  overflow: hidden;
+  width: 50%;
+  height: 86vh;
+  border-radius: 15px;
+  margin-top: 75px;
+  margin-left: 35px;
+  text-align: center;
+  color: white;
+  background-color: rgba(255, 255, 255, 0.3); /* Optional: a slight background for better contrast */
+  box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.7);
+}
+    /* Charts container styling */
+    #charts-container {
+      display: flex;
+      flex-direction: column;
+      width: 40%;
+      height: 100vh;
+      margin-top: 75px;
+      margin-right: 40px;
+    }
+    /* City name and location icon */
+    #location-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+
+    #location-icon {
+      font-size: 1.2rem;
+      margin-right: 5px;
+    }
+
+    /* Temperature display */
+    #temperature {
+      font-size: 6rem;
+      margin: 0;
+    }
+
+    /* Weather description */
+    #weather-description {
+      font-size: 1.5rem;
+      margin: 10px 0;
+    }
+ /* Weather icon with 3D effect */
+ #weather-icon {
+      width: 100px;
+      height: 100px;
+      margin: 15px 0;
+      border-radius: 50%;
+      object-fit: cover;
+      background-color: none;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.9);
+      border: none;
+    }
+
+    /* Humidity and Wind Speed */
+    #weather-details {
+      font-size: 1rem;
+      margin-top: 10px;
+    }
+
+
+    .chart-container {
+      background-color: #ecf0f1;
+      border-radius: 10px;
+      padding: 10px;
+      width: 100%;
+      height: 200px;
+      margin-bottom: 10px;
+      box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.7);
+      z-index: 1; /* Ensure the charts are above the main container */
+      background-color: rgb(22, 23, 26, 0.4); /* Optional: a slight background for better contrast */
+
+    }
+
+    .chart-container canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Weather Conditions Background */
+    .background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background-size: cover;
+      background-position: center;
+    }
+       /* Weather conditions */
+       .clear-sky .background {
+      background-image: url('ClearSky.jpg');
+    }
+
+    .few-clouds .background {
+      background-image: url('FewClouds.jpg');
+    }
+
+    .scattered-clouds .background {
+      background-image: url('ScatteredClouds.jpg');
+    }
+
+    .broken-clouds .background {
+      background-image: url('BrokenClouds.jpg');
+    }
+
+    .overcast-clouds .background {
+      background-image: url('OverCastClouds.jpg');
+    }
+
+    .shower-rain .background {
+      background-image: url('ShowerRain.jpg');
+    }
+    .drizzle .background,
+.light-drizzle .background,
+.heavy-drizzle .background,
+.light-intensity-drizzle .background,
+.light-intensity-drizzle-rain .background,
+.drizzle-rain .background,
+.heavy-intensity-drizzle .background,
+.heavy-intensity-drizzle-rain .background,
+.shower-drizzle .background,
+.heavy-shower-drizzle .background {
+    background-image: url('Drizzle.jpg');
+}
+
+    
+    .thunderstorm .background,
+.thunderstorm-light .background,
+.thunderstorm-heavy .background,
+.light-thunderstorm .background,
+.thunderstorm-heavy .background,
+.heavy-thunderstorm .background,
+.ragged-thunderstorm .background,
+.thunderstorm-with-light-drizzle .background,
+.thunderstorm-with-drizzle .background,
+.thunderstorm-with-heavy-drizzle .background {
+    background-image: url('Thunderstorm.jpg'); /* Adjust the image file name as necessary */
+}
+
+.light-rain .background,
+.moderate-rain .background,
+.heavy-intensity-rain .background,
+.very-heavy-rain .background,
+.extreme-rain .background,
+.freezing-rain .background,
+.light-intensity-shower-rain .background,
+.shower-rain .background,
+.heavy-intensity-shower-rain .background,
+.ragged-shower-rain .background {
+    background-image: url('RainImage.webp');
+}
+
+
+/* Snow */
+.light-snow .background,
+.snow .background,
+.heavy-snow .background,
+.sleet .background,
+.light-shower-sleet .background,
+.shower-sleet .background,
+.light-rain-and-snow .background,
+.rain-and-snow .background,
+.light-shower-snow .background,
+.shower-snow .background,
+.heavy-shower-snow .background {
+    background-image: url('Snow.jpg'); /* Adjust the image file name as necessary */
+}
+
+    .mist .background {
+      background-image: url('Mist.jpg');
+    }
+
+    .smoke .background {
+      background-image: url('Smoke.jpg');
+    }
+
+    .haze .background {
+      background-image: url('Haze.webp');
+    }
+
+    .dust .background {
+      background-image: url('Dust.jpeg');
+    }
+
+    .fog .background {
+      background-image: url('Fog.webp');
+    }
+
+    .sand .background {
+      background-image: url('Sand.jpeg');
+    }
+
+    .squall .background {
+      background-image: url('Squall.jpeg');
+    }
+
+    .tornado .background {
+      background-image: url('Tornado.jpeg');
+    }
+
+    /* Overlay to cover the entire screen */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Grey transparent overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999; /* Ensure it appears above other content */
+}
+
+/* Center the spinner and text */
+#loading-spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+/* Spinner styling */
+.spinner {
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-top: 5px solid #007bff;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+/* Animation keyframes */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#date-time {
+  font-size: 0.9rem; /* Smaller font size */
+  color: #ddd; /* Light grey color */
+  margin-top: 5px; /* Add a little space between the location and date */
+}
+
+
+/* Weather details container */
+#weather-details {
+  display: flex;
+  justify-content: space-around; /* Even spacing between the items */
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* Individual weather info block */
+.weather-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+
+}
+
+/* Styling for the icons */
+.weather-info i {
+  font-size: 2rem; /* Icon size */
+  margin-bottom: 5px;
+}
+
+/* Heading for weather details */
+.weather-heading {
+  font-size: 1.2rem; /* Slightly larger heading */
+  margin: 5px 0;
+}
+
+/* Value for weather details */
+.weather-value {
+  font-size: 1.5rem; /* Larger font size for values */
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* Small separator line beneath the value */
+.separator {
+  font-size: 0.8rem; /* Smaller font for the separator line */
+  color: rgba(255, 255, 255, 0.6); /* Light grey */
+  margin-top: -5px;
+}
+
+/* Responsive Styles for devices with max-width of 768px (tablets and smaller devices) */
+@media (max-width: 768px) {
+
+/* Change layout to column direction on smaller screens */
+#main-container {
+  flex-direction: column;
+  align-items: center;
+  margin: 0; /* Remove margins for smaller screens */
+  padding: 10px; /* Add padding for better layout */
+  width: 100%;
+  height: auto; /* Make height responsive */
+  gap: 20px; /* Add space between sections */
+  margin-left:20px;
+  margin-right: 20px;
+}
+
+/* Weather widget styling for smaller screens */
+#weather-widget {
+  width: 90%; /* Full width for smaller screens */
+  margin: 0 auto; /* Center it */
+  padding: 15px;
+  height: auto; /* Adjust height to fit content */
+}
+
+/* Weather icon size adjustment */
+#weather-icon {
+  width: 80px;
+  height: 80px;
+}
+
+/* Adjust temperature font size for smaller screens */
+#temperature {
+  font-size: 3rem; /* Reduce temperature font size */
+}
+
+/* Weather description */
+#weather-description {
+  font-size: 1.2rem;
+}
+
+/* Weather details become vertical */
+#weather-details {
+  flex-direction: column; /* Stack humidity and wind vertically */
+  align-items: center; /* Center them */
+}
+
+/* Individual weather info blocks spacing */
+.weather-info {
+  margin: 10px 0;
+}
+
+/* Chart container adjustments */
+#charts-container {
+  width: 100%; /* Full width for each chart */
+  margin: 0 auto; /* Center it */
+}
+
+.chart-container {
+  width: 90%; /* Full width */
+  height: 200px; /* Adjust chart height */
+  margin-bottom: 20px; /* Add space between charts */
+}
+
+/* Sidebar adjustments for mobile view */
+.hamburger-menu {
+  font-size: 1.5rem; /* Ensure the hamburger menu icon is visible */
+}
+
+/* Hide sidebar by default */
+.sidebar {
+  left: -250px; /* Hide sidebar offscreen */
+  transition: left 0.5s ease;
+}
+
+/* Sidebar when open */
+.sidebar.open {
+  left: 0;
+}
+
+/* User profile adjustments */
+#user-profile-container {
+  padding: 10px; /* Reduce padding for smaller screens */
+  position: static; /* Remove fixed positioning */
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-image {
+  width: 50px; /* Adjust profile image size */
+  height: 50px;
+}
+
+#search-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%; /* Reduce width of the search container */
+    margin: 0 auto; /* Center the container */
+    margin-top: 20px; /* Adjust top margin */
+  }
+  #city-input {
+    width: 90%; /* Reduce width of the search bar */
+    padding: 8px; /* Adjust padding */
+    font-size: 1rem; /* Adjust font size */
+  }
+
+}
+
+
+
+  </style>
+</head>
+
+<body>
+  <!-- Blurry Background for the Webpage -->
+  <div id="background-blur"></div>
+
+  <!-- Hamburger Menu and Sidebar -->
+  <div class="hamburger-menu" id="hamburger-menu">☰</div>
+  <div class="sidebar" id="sidebar">
+    <div class="logo-container">
+      <img src="Logo.jpg" alt="Weather App Logo" class="logo">
+      <h1>Weather App</h1>
+    </div>
+    <div id="button-container">
+      <button id="dashboard-btn" onclick="window.location.href='index.html'">
+        <i class="fas fa-chart-pie"></i> Dashboard
+      </button>
+      <button id="tables-btn" onclick="window.location.href='table.html'">
+        <i class="fas fa-table"></i> Tables
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <header>
+      <div id="user-profile-container">
+        <div id="user-profile">
+          <img src="Profile.jpg" alt="Maryam Khan" class="profile-image">
+          <p><strong>Maryam Khan</strong></p>
+        </div>
+      </div>
+    </header>
+
+
+<div id="search-container">
+  <input type="text" id="city-input" placeholder="Enter city name">
+  <button id="get-weather-btn">Get Weather</button>
+</div>
+
+    <div id="loading-overlay" class="overlay" style="display: none;">
+      <div id="loading-spinner-container">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+      </div>
+    </div>
+
+    <!-- Weather Widget and Charts -->
+    <section id="main-container">
+      <div id="toggle-container" style="position: absolute; top: 20px; right: 20px;">
+        <button id="unit-toggle" style="padding: 10px 20px; font-size: 16px;">Switch to °F</button>
+      </div>
+      <div id="weather-widget">
+        <div class="background"></div>
+        <div id="location-container">
+          <span id="location-icon">📍</span>
+          <span id="city-name">London</span>
+          
+        </div>
+        <p id="date-time"></p>
+        <p id="temperature">15°C</p>
+        <p id="weather-description">Clear Sky</p>
+        <img id="weather-icon" src="weather-icon.png" alt="Weather Icon">
+        <div id="weather-details">
+          <div class="weather-info">
+            <i class="fas fa-tint"></i>
+            <p class="weather-heading">Humidity</p>
+            <p class="weather-value" id="humidity">60%</p>
+            <p class="separator">────────</p>
+          </div>
+          <div class="weather-info">
+            <i class="fas fa-wind"></i>
+            <p class="weather-heading">Wind Speed</p>
+            <p class="weather-value" id="wind-speed">15 km/h</p>
+            <p class="separator">────────</p>
+          </div>
+        </div>
+        
+      </div>
+
+      <div id="charts-container">
+        <div class="chart-container">
+          <canvas id="bar-chart"></canvas>
+        </div>
+        <div class="chart-container">
+          <canvas id="doughnut-chart"></canvas>
+        </div>
+        <div class="chart-container">
+          <canvas id="line-chart"></canvas>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- External JS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="index.js"></script>
+</body>
+
+
+</html>
